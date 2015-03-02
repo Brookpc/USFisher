@@ -10,7 +10,7 @@ import org.rev317.min.api.wrappers.SceneObject;
 
 public class Banks implements Strategy{
 
-	public static int[] fishIDs = {335, 331, 349, 317, 327, 353, 377, 383, 359, 371,15271};
+	public static final int[] FISH_IDS = {335, 331, 349, 317, 327, 353, 377, 383, 359, 371,15271};
 
 	@Override
 	public boolean activate() {
@@ -24,13 +24,13 @@ public class Banks implements Strategy{
 	public void execute() {
 
 		SceneObject[] booth = null;
-		
+
 		if (USFisher.useDock == 3) {
 			booth = SceneObjects.getNearest(5276);
-		} else if (USFisher.useDock == 2 || USFisher.useDock == 1){
+		} else if (USFisher.useDock == 2 || USFisher.useDock == 1) {
 			booth = SceneObjects.getNearest(2213);
 		}
-		
+
 		if (Game.getOpenInterfaceId() != 5292 && Inventory.isFull()) {
 			if (booth != null) {
 				System.out.println("Banking...");
@@ -50,8 +50,8 @@ public class Banks implements Strategy{
 			}
 		}
 		if (Game.getOpenInterfaceId() == 5292 && Inventory.isFull()) {
-			if(fishIDs != null) {
-				try{
+			if(FISH_IDS != null) {
+				try {
 					Bank.depositAllExcept(302,310,314,306,304,312,315);
 				} catch(Exception e) {
 					e.printStackTrace();

@@ -27,8 +27,6 @@ import org.parabot.environment.scripts.Category;
 import org.parabot.environment.scripts.Script;
 import org.parabot.environment.scripts.ScriptManifest;
 import org.parabot.environment.scripts.framework.Strategy;
-import org.rev317.min.api.events.MessageEvent;
-import org.rev317.min.api.events.listeners.MessageListener;
 import org.rev317.min.api.methods.Skill;
 import org.rev317.min.api.wrappers.Area;
 import org.rev317.min.api.wrappers.Tile;
@@ -40,18 +38,15 @@ name = "USFisher by Ark",
 servers = { "Ultimate Scape" },
 version = 2.2)
 
-public class USFisher extends Script implements MessageListener, Paintable {
-	
+public class USFisher extends Script implements Paintable {
+
 	//Strategies List
 	private final ArrayList<Strategy> strategies = new ArrayList<Strategy>();
 
-	//Areas and Tile arrays
-	//Donator
+	//Donator Areas and Tile arrays
 	public final static Tile[] DONOR_WALK = {new Tile (2560,3891,0), new Tile(2571,3895,0)};
-	public final static Tile donorSpot = new Tile(2560,3891,0);
 	
-	//public final static Area donorBank = new Area(new Tile(2584, 3417, 0), new Tile(2590, 3417, 0), new Tile(2584, 3423, 0), new Tile(2590, 3423, 0));
-	//Guild
+	//Fishing Guild areas and tile arrays
 	public final static Tile[] SOUTH_WALK = {new Tile(2608, 3415, 0), new Tile (2604, 3412, 0), new Tile(2600, 3406, 0), new Tile(2594, 3414, 0), new Tile(2586, 3420, 0)};
 	public final static Tile[] NORTH_WALK = {new Tile (2599, 3422, 0), new Tile(2594, 3417), new Tile(2586, 3420, 0)};
 	public final static Area northDock = new Area (new Tile (2596, 3420, 0), new Tile(2604, 3420, 0), new Tile(2604, 3425, 0), new Tile(2596, 3425, 0));
@@ -61,62 +56,60 @@ public class USFisher extends Script implements MessageListener, Paintable {
 	//General Variables
 	public static int spotID;
 	public static int useDock;
-	public int fishCount;
-	public static int expCount;
-	private static int curExp;
-	private static int startExp;
-	public static boolean isRunning = true;
-	public int[] fishIDs = {335, 331, 349, 317, 327, 353, 377, 383, 359, 371};
-
 	public static int spotInteractCode;
+
 	//Paint Variables
 	private final Color color1 = new Color(255, 255, 255);
 	private final Font font2 = new Font("Arial", 0, 14);
 	private final Timer RUNTIME = new Timer();
 	private static Image img;
+	public int fishCount;
+	public static int expCount;
+	private static int curExp;
+	private static int startExp;
+	public static boolean isRunning = true;
 
 	//GUI variables
 	Gui x = new Gui();
 	public boolean guiWait = true;
 
-
+	/***************************************************************************************************************************************/
 
 	public boolean onExecute() {
 		x.setVisible(true);
 		while (x.isRunning && guiWait) {
 			Time.sleep(200);
 		}
-		
+
 		strategies.add(new Relog());
 		strategies.add(new Walk());
-		strategies.add(new Banks());
 		strategies.add(new Fish());
+		strategies.add(new Banks());
 		
+
 		img = getImage("http://i.imgur.com/fRVqz8M.png");
 
 		startExp = Skill.FISHING.getExperience();
 		curExp = Skill.FISHING.getExperience();
 		caughtCheck();
-		
+
 		provide(strategies);
-		
+
 		return true;
 	}
-	/***************************************************************************/
+	
+	/***************************************************************************************************************************************/
+	
 	public static Image getImage(String url) {
 		try {
 			return ImageIO.read(new URL(url));
 		} catch (IOException e) {
-			System.out.println("Line 96");
+			e.printStackTrace();
 			return null;
 		}
 	}
-
-	public void messageReceived( MessageEvent me ) {
-		if (me.getMessage().contains("You catch a")) {
-			fishCount += 1;
-		}
-	}
+	
+	/***************************************************************************************************************************************/
 	
 	public static int getExpCount() {
 		curExp = Skill.FISHING.getExperience();
@@ -124,34 +117,37 @@ public class USFisher extends Script implements MessageListener, Paintable {
 		return expCount;
 	}
 	
+	/***************************************************************************************************************************************/
 	//caughtCheck method originally created by Mrsdefnerd
 	public void caughtCheck() {
-        Thread t = new Thread(new Runnable() {
+		Thread t = new Thread(new Runnable() {
 
-                @Override
-                public void run() {
-                        while (isRunning) {
-                                if (Skill.FISHING.getExperience() - startExp != expCount) {
-                                        fishCount++;
-                                        expCount = Skill.FISHING.getExperience() - startExp;
-                                }
-                        }
-                }
-               
-        });
-        t.start();
-}
+			@Override
+			public void run() {
+				while (isRunning) {
+					if (Skill.FISHING.getExperience() - startExp != expCount) {
+						fishCount++;
+						expCount = Skill.FISHING.getExperience() - startExp;
+					}
+				}
+			}
+
+		});
+		t.start();
+	}
+
+	/***************************************************************************************************************************************/	
 	
-/***************************************************************************************************************************************/	
 	public String addDecimals(int i)
-    {
-        DecimalFormat x = new DecimalFormat("#,###");
-       
+	{
+		DecimalFormat x = new DecimalFormat("#,###");
 
-    return "" + x.format(i);
-    }
-/***************************************************************************************************************************************/
+
+		return "" + x.format(i);
+	}
 	
+	/***************************************************************************************************************************************/
+
 	@Override
 	public void paint(Graphics arg0) {
 
@@ -159,19 +155,21 @@ public class USFisher extends Script implements MessageListener, Paintable {
 		if (guiWait) {
 			Time.sleep(200);
 		}else {
-			
-		g.drawImage(img, 4, 23, null);
-		g.setFont(font2);
-		g.setColor(color1);
-		g.drawString(addDecimals(fishCount), 82, 57);
-		g.drawString(addDecimals(expCount), 82, 70);
-		g.drawString("" + RUNTIME, 82, 83);
-		
+
+			g.drawImage(img, 4, 23, null);
+			g.setFont(font2);
+			g.setColor(color1);
+			g.drawString(addDecimals(fishCount), 82, 57);
+			g.drawString(addDecimals(expCount), 82, 70);
+			g.drawString("" + RUNTIME, 82, 83);
+
 		}
 	}
 	
+	/***************************************************************************************************************************************/
+
 	public class Gui extends JFrame {
-		
+
 		/**
 		 * 
 		 */
@@ -224,8 +222,6 @@ public class USFisher extends Script implements MessageListener, Paintable {
 			btnStart = new JButton("Start");
 			btnStart.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					//String chosen = fishList.getSelectedItem().toString();
-					
 					if(fishList.getSelectedIndex() == 0) {
 						spotID = 320;
 						useDock = 2;
@@ -266,15 +262,12 @@ public class USFisher extends Script implements MessageListener, Paintable {
 			lblUSFisher= new JLabel();
 			lblReady = new JLabel();
 		}
-
-		String[] fishStrings = { "Shrimp", "Trout", "Lobster", "Tuna/SwordFish", "Shark", "RockTail" };
+		
+		public String[] fishStrings = { "Shrimp", "Trout", "Lobster", "Tuna/SwordFish", "Shark", "RockTail" };
 		private JLabel lblUSFisher;
 		private JButton btnStart;
-		@SuppressWarnings({ "rawtypes", "unused" })
+		@SuppressWarnings({ "rawtypes", "unused"})
 		private JComboBox fishList;
 		private JLabel lblReady;
-
-
-
 	}
 }
