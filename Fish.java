@@ -32,9 +32,10 @@ public class Fish implements Strategy {
 			Time.sleep(2000);
 		}
 
-		//Track EXP as fishing animation loops
+		//Track EXP and caught fish as fishing animation loops
 		while (Players.getMyPlayer().getAnimation() != -1 && Relog.isLoggedIn()) {
-			USFisher.getExpCount();
+			USFisher.caughtCounter();
+			USFisher.getExpCount();	
 			Time.sleep(200);
 		}
 	}

@@ -33,7 +33,7 @@ public class Relog implements Strategy {
 		try {
 		return SceneObjects.getNearest().length > 0;
 		} catch(IllegalArgumentException e) {
-			// catch
+			System.out.println("You logged out...");
 		}
 		return false;
 		

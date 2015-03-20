@@ -59,11 +59,11 @@ public class USFisher extends Script implements Paintable {
 	public static int spotInteractCode;
 
 	//Paint Variables
-	private final Color color1 = new Color(255, 255, 255);
-	private final Font font2 = new Font("Arial", 0, 14);
+	private final Color textColor = new Color(255, 255, 255);
+	private final Font textFont = new Font("Arial", 0, 14);
 	private final Timer RUNTIME = new Timer();
 	private static Image img;
-	public int fishCount;
+	public static int fishCount;
 	public static int expCount;
 	private static int curExp;
 	private static int startExp;
@@ -77,7 +77,7 @@ public class USFisher extends Script implements Paintable {
 
 	public boolean onExecute() {
 		x.setVisible(true);
-		while (x.isRunning && guiWait) {
+		while (x.guiIsRunning && guiWait) {
 			Time.sleep(200);
 		}
 
@@ -91,20 +91,22 @@ public class USFisher extends Script implements Paintable {
 
 		startExp = Skill.FISHING.getExperience();
 		curExp = Skill.FISHING.getExperience();
-		caughtCheck();
 
 		provide(strategies);
 
 		return true;
+		
 	}
 	
 	/***************************************************************************************************************************************/
 	
 	public static Image getImage(String url) {
+		
 		try {
 			return ImageIO.read(new URL(url));
 		} catch (IOException e) {
 			e.printStackTrace();
+			System.out.println("Image not found for paint...");
 			return null;
 		}
 	}
@@ -118,31 +120,18 @@ public class USFisher extends Script implements Paintable {
 	}
 	
 	/***************************************************************************************************************************************/
-	//caughtCheck method originally created by Mrsdefnerd
-	public void caughtCheck() {
-		Thread t = new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				while (isRunning) {
-					if (Skill.FISHING.getExperience() - startExp != expCount) {
-						fishCount++;
-						expCount = Skill.FISHING.getExperience() - startExp;
-					}
-				}
-			}
-
-		});
-		t.start();
+	
+	public static void caughtCounter() {
+		if (Skill.FISHING.getExperience() - startExp != expCount) {
+			fishCount++;
+		}
 	}
-
+	
 	/***************************************************************************************************************************************/	
 	
 	public String addDecimals(int i)
 	{
 		DecimalFormat x = new DecimalFormat("#,###");
-
-
 		return "" + x.format(i);
 	}
 	
@@ -157,8 +146,8 @@ public class USFisher extends Script implements Paintable {
 		}else {
 
 			g.drawImage(img, 4, 23, null);
-			g.setFont(font2);
-			g.setColor(color1);
+			g.setFont(textFont);
+			g.setColor(textColor);
 			g.drawString(addDecimals(fishCount), 82, 57);
 			g.drawString(addDecimals(expCount), 82, 70);
 			g.drawString("" + RUNTIME, 82, 83);
@@ -174,7 +163,7 @@ public class USFisher extends Script implements Paintable {
 		 * 
 		 */
 		private static final long serialVersionUID = -6241803601296202605L;
-		public boolean isRunning = true;
+		public boolean guiIsRunning = true;
 		private JPanel contentPane;
 
 		public void main(String[] args) {
@@ -184,7 +173,8 @@ public class USFisher extends Script implements Paintable {
 						Gui frame = new Gui();
 						frame.setVisible(true);
 					} catch (Exception e) {
-						System.out.println("Line 136");
+						e.printStackTrace();
+						System.out.println("Line 186");
 					}
 				}
 			});
